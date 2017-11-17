@@ -2,7 +2,6 @@
  * jcparam.c
  *
  * Copyright (C) 1991-1998, Thomas G. Lane.
- * Modified 2003-2012 by Guido Vollbeding.
  * This file is part of the Independent JPEG Group's software.
  * For conditions of distribution and use, see the accompanying README file.
  *
@@ -22,8 +21,8 @@
 
 GLOBAL(void)
 jpeg_add_quant_table (j_compress_ptr cinfo, int which_tbl,
-                      const unsigned int *basic_table,
-                      int scale_factor, boolean force_baseline)
+              const unsigned int *basic_table,
+              int scale_factor, boolean force_baseline)
 /* Define a quantization table equal to the basic_table times
  * a scale factor (given as a percentage).
  * If force_baseline is TRUE, the computed quantization table entries
@@ -61,61 +60,45 @@ jpeg_add_quant_table (j_compress_ptr cinfo, int which_tbl,
 }
 
 
-/* These are the sample quantization tables given in JPEG spec section K.1.
- * The spec says that the values given produce "good" quality, and
- * when divided by 2, "very good" quality.
- */
-static const unsigned int std_luminance_quant_tbl[DCTSIZE2] = {
-  16,  11,  10,  16,  24,  40,  51,  61,
-  12,  12,  14,  19,  26,  58,  60,  55,
-  14,  13,  16,  24,  40,  57,  69,  56,
-  14,  17,  22,  29,  51,  87,  80,  62,
-  18,  22,  37,  56,  68, 109, 103,  77,
-  24,  35,  55,  64,  81, 104, 113,  92,
-  49,  64,  78,  87, 103, 121, 120, 101,
-  72,  92,  95,  98, 112, 100, 103,  99
-};
-static const unsigned int std_chrominance_quant_tbl[DCTSIZE2] = {
-  17,  18,  24,  47,  99,  99,  99,  99,
-  18,  21,  26,  66,  99,  99,  99,  99,
-  24,  26,  56,  99,  99,  99,  99,  99,
-  47,  66,  99,  99,  99,  99,  99,  99,
-  99,  99,  99,  99,  99,  99,  99,  99,
-  99,  99,  99,  99,  99,  99,  99,  99,
-  99,  99,  99,  99,  99,  99,  99,  99,
-  99,  99,  99,  99,  99,  99,  99,  99
-};
-
-
-GLOBAL(void)
-jpeg_default_qtables (j_compress_ptr cinfo, boolean force_baseline)
-/* Set or change the 'quality' (quantization) setting, using default tables
- * and straight percentage-scaling quality scales.
- * This entry point allows different scalings for luminance and chrominance.
- */
-{
-  /* Set up two quantization tables using the specified scaling */
-  jpeg_add_quant_table(cinfo, 0, std_luminance_quant_tbl,
-                       cinfo->q_scale_factor[0], force_baseline);
-  jpeg_add_quant_table(cinfo, 1, std_chrominance_quant_tbl,
-                       cinfo->q_scale_factor[1], force_baseline);
-}
-
-
 GLOBAL(void)
 jpeg_set_linear_quality (j_compress_ptr cinfo, int scale_factor,
-                         boolean force_baseline)
+             boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables
  * and a straight percentage-scaling quality scale.  In most cases it's better
  * to use jpeg_set_quality (below); this entry point is provided for
  * applications that insist on a linear percentage scaling.
  */
 {
+  /* These are the sample quantization tables given in JPEG spec section K.1.
+   * The spec says that the values given produce "good" quality, and
+   * when divided by 2, "very good" quality.
+   */
+  static const unsigned int std_luminance_quant_tbl[DCTSIZE2] = {
+    16,  11,  10,  16,  24,  40,  51,  61,
+    12,  12,  14,  19,  26,  58,  60,  55,
+    14,  13,  16,  24,  40,  57,  69,  56,
+    14,  17,  22,  29,  51,  87,  80,  62,
+    18,  22,  37,  56,  68, 109, 103,  77,
+    24,  35,  55,  64,  81, 104, 113,  92,
+    49,  64,  78,  87, 103, 121, 120, 101,
+    72,  92,  95,  98, 112, 100, 103,  99
+  };
+  static const unsigned int std_chrominance_quant_tbl[DCTSIZE2] = {
+    17,  18,  24,  47,  99,  99,  99,  99,
+    18,  21,  26,  66,  99,  99,  99,  99,
+    24,  26,  56,  99,  99,  99,  99,  99,
+    47,  66,  99,  99,  99,  99,  99,  99,
+    99,  99,  99,  99,  99,  99,  99,  99,
+    99,  99,  99,  99,  99,  99,  99,  99,
+    99,  99,  99,  99,  99,  99,  99,  99,
+    99,  99,  99,  99,  99,  99,  99,  99
+  };
+
   /* Set up two quantization tables using the specified scaling */
   jpeg_add_quant_table(cinfo, 0, std_luminance_quant_tbl,
-                       scale_factor, force_baseline);
+               scale_factor, force_baseline);
   jpeg_add_quant_table(cinfo, 1, std_chrominance_quant_tbl,
-                       scale_factor, force_baseline);
+               scale_factor, force_baseline);
 }
 
 
@@ -150,7 +133,7 @@ jpeg_set_quality (j_compress_ptr cinfo, int quality, boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables.
  * This is the standard quality-adjusting entry point for typical user
  * interfaces; only those who want detailed control over quantization tables
- * would use the preceding routines directly.
+ * would use the preceding three routines directly.
  */
 {
   /* Convert user 0-100 rating to percentage scaling */
@@ -167,7 +150,7 @@ jpeg_set_quality (j_compress_ptr cinfo, int quality, boolean force_baseline)
 
 LOCAL(void)
 add_huff_table (j_compress_ptr cinfo,
-                JHUFF_TBL **htblptr, const UINT8 *bits, const UINT8 *val)
+        JHUFF_TBL **htblptr, const UINT8 *bits, const UINT8 *val)
 /* Define a Huffman table */
 {
   int nsymbols, len;
@@ -261,13 +244,13 @@ std_huff_tables (j_compress_ptr cinfo)
       0xf9, 0xfa };
 
   add_huff_table(cinfo, &cinfo->dc_huff_tbl_ptrs[0],
-                 bits_dc_luminance, val_dc_luminance);
+         bits_dc_luminance, val_dc_luminance);
   add_huff_table(cinfo, &cinfo->ac_huff_tbl_ptrs[0],
-                 bits_ac_luminance, val_ac_luminance);
+         bits_ac_luminance, val_ac_luminance);
   add_huff_table(cinfo, &cinfo->dc_huff_tbl_ptrs[1],
-                 bits_dc_chrominance, val_dc_chrominance);
+         bits_dc_chrominance, val_dc_chrominance);
   add_huff_table(cinfo, &cinfo->ac_huff_tbl_ptrs[1],
-                 bits_ac_chrominance, val_ac_chrominance);
+         bits_ac_chrominance, val_ac_chrominance);
 }
 
 
@@ -297,12 +280,10 @@ jpeg_set_defaults (j_compress_ptr cinfo)
   if (cinfo->comp_info == NULL)
     cinfo->comp_info = (jpeg_component_info *)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
-                                  MAX_COMPONENTS * SIZEOF(jpeg_component_info));
+                  MAX_COMPONENTS * SIZEOF(jpeg_component_info));
 
   /* Initialize everything not dependent on the color space */
 
-  cinfo->scale_num = 1;		/* 1:1 scaling */
-  cinfo->scale_denom = 1;
   cinfo->data_precision = BITS_IN_JSAMPLE;
   /* Set up two quantization tables using default quality of 75 */
   jpeg_set_quality(cinfo, 75, TRUE);
@@ -339,9 +320,6 @@ jpeg_set_defaults (j_compress_ptr cinfo)
   /* By default, use the simpler non-cosited sampling alignment */
   cinfo->CCIR601_sampling = FALSE;
 
-  /* By default, apply fancy downsampling */
-  cinfo->do_fancy_downsampling = TRUE;
-
   /* No input smoothing */
   cinfo->smoothing_factor = 0;
 
@@ -366,9 +344,6 @@ jpeg_set_defaults (j_compress_ptr cinfo)
   cinfo->density_unit = 0;	/* Pixel size is unknown by default */
   cinfo->X_density = 1;		/* Pixel aspect ratio is square by default */
   cinfo->Y_density = 1;
-
-  /* No color transform */
-  cinfo->color_transform = JCT_NONE;
 
   /* Choose JPEG colorspace based on input space, set defaults accordingly */
 
@@ -451,9 +426,7 @@ jpeg_set_colorspace (j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
     cinfo->write_Adobe_marker = TRUE; /* write Adobe marker to flag RGB */
     cinfo->num_components = 3;
     SET_COMP(0, 0x52 /* 'R' */, 1,1, 0, 0,0);
-    SET_COMP(1, 0x47 /* 'G' */, 1,1, 0,
-                cinfo->color_transform == JCT_SUBTRACT_GREEN ? 1 : 0,
-                cinfo->color_transform == JCT_SUBTRACT_GREEN ? 1 : 0);
+    SET_COMP(1, 0x47 /* 'G' */, 1,1, 0, 0,0);
     SET_COMP(2, 0x42 /* 'B' */, 1,1, 0, 0,0);
     break;
   case JCS_YCbCr:
@@ -485,7 +458,7 @@ jpeg_set_colorspace (j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
     cinfo->num_components = cinfo->input_components;
     if (cinfo->num_components < 1 || cinfo->num_components > MAX_COMPONENTS)
       ERREXIT2(cinfo, JERR_COMPONENT_COUNT, cinfo->num_components,
-               MAX_COMPONENTS);
+           MAX_COMPONENTS);
     for (ci = 0; ci < cinfo->num_components; ci++) {
       SET_COMP(ci, ci, 1,1, 0, 0,0);
     }
@@ -500,7 +473,7 @@ jpeg_set_colorspace (j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 
 LOCAL(jpeg_scan_info *)
 fill_a_scan (jpeg_scan_info * scanptr, int ci,
-             int Ss, int Se, int Ah, int Al)
+         int Ss, int Se, int Ah, int Al)
 /* Support routine: generate one scan for specified component */
 {
   scanptr->comps_in_scan = 1;
@@ -515,7 +488,7 @@ fill_a_scan (jpeg_scan_info * scanptr, int ci,
 
 LOCAL(jpeg_scan_info *)
 fill_scans (jpeg_scan_info * scanptr, int ncomps,
-            int Ss, int Se, int Ah, int Al)
+        int Ss, int Se, int Ah, int Al)
 /* Support routine: generate one scan for each component */
 {
   int ci;
@@ -594,7 +567,7 @@ jpeg_simple_progression (j_compress_ptr cinfo)
     cinfo->script_space_size = MAX(nscans, 10);
     cinfo->script_space = (jpeg_scan_info *)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
-                        cinfo->script_space_size * SIZEOF(jpeg_scan_info));
+            cinfo->script_space_size * SIZEOF(jpeg_scan_info));
   }
   scanptr = cinfo->script_space;
   cinfo->scan_info = scanptr;
